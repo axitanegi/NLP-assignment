@@ -2,14 +2,14 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 
-# ---------- settings ----------
-INPUT_VIDEO = "input.mp4"          # your input video
-OUTPUT_VIDEO = "pose_black.mp4"    # output video (black background + white COCO points)
-MODEL_PATH = "yolo26n-pose.pt"     # same model as teacher's code
-CONF = 0.25                        # person detection confidence
-KPT_CONF = 0.3                     # minimum keypoint confidence to draw
-DRAW_LINES = True                  # set False to show only the points
-# ------------------------------
+
+INPUT_VIDEO = "samplevid.mp4"         
+OUTPUT_VIDEO = "pose_black.mp4"   
+MODEL_PATH = "yolo26n-pose.pt"    
+CONF = 0.25                      
+KPT_CONF = 0.3                     
+DRAW_LINES = True                 
+
 
 
 SKELETON = [
@@ -42,15 +42,15 @@ while True:
 
     results = model(frame, conf=CONF, verbose=False)
 
-    # black canvas, same size as the video (original frame is discarded)
+   
     canvas = np.zeros((height, width, 3), dtype=np.uint8)
 
     kpts = results[0].keypoints
     if kpts is not None and kpts.xy is not None:
-        xy_all = kpts.xy.cpu().numpy()                      # (people, 17, 2)
+        xy_all = kpts.xy.cpu().numpy()                     
         conf_all = (kpts.conf.cpu().numpy()
                     if kpts.conf is not None
-                    else np.ones(xy_all.shape[:2]))         # (people, 17)
+                    else np.ones(xy_all.shape[:2]))        
 
         for xy, kc in zip(xy_all, conf_all):
             visible = [(kc[i] >= KPT_CONF and xy[i][0] > 0 and xy[i][1] > 0)
